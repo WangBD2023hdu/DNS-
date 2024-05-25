@@ -63,7 +63,7 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
              sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
              (sockaddr *)servaddr, sizeof(sockaddr_in)) < 0) {
     perror("send failure!");
-    return -1;
+    return 1;
   }
 
   return buflen;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 
   int sockfd = socket(AF_INET, SOCK_DGRAM, 0);  // UDP
   if (sockfd < 0) {
-    return -1;
+    return 1;
   }
   struct sockaddr_in servaddr;
   bzero(&servaddr, sizeof(servaddr));
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
         (size_t)server->h_length);
   printf("%s\n", server->h_addr);
   int sendlen;
-  if ((sendlen = send_query(sockfd, domain, &servaddr)) == -1) {
+  if ((sendlen = send_query(sockfd, domain, &servaddr)) == 1) {
     return 1;
   }
   printf("send success!\n");
