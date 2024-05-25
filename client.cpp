@@ -67,9 +67,9 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
   size_t buflen = sizeof(header) + strlen(netdomian) + 1 + sizeof(question);
   if (sendto(sockfd, buf,
              sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
-             (sockaddr *)servaddr, sizeof(sockaddr_in)) < 0) {
+             (sockaddr *)servaddr, sizeof(sockaddr)) < 0) {
     perror("send failure!");
-    return 1;
+    exit(1);
   }
 
   return buflen;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     dns_server_port = atoi(argv[3]);
   }
 
-  int sockfd = socket(AF_INET, SOCK_DGRAM, 0);  // UDP
+  int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);  // UDP
   if (sockfd < 0) {
     return 1;
   }
@@ -105,9 +105,7 @@ int main(int argc, char *argv[]) {
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(dns_server_port);
-  bcopy(server->h_addr, (char *)&servaddr.sin_addr.s_addr,
-        (size_t)server->h_length);
-  printf("%s\n", server->h_addr);
+  memcpy(&servaddr.sin_addr, server->h_addr_list[0], server->h_length);
   int sendlen;
   if ((sendlen = send_query(sockfd, domain, &servaddr)) == 1) {
     return 1;
