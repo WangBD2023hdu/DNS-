@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     dns_port = atoi(argv[1]);
   }
 
-  int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+  int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (sockfd < 0) {
     perror("socket");
     exit(EXIT_FAILURE);
@@ -53,10 +53,16 @@ int main(int argc, char *argv[]) {
     while (*(recvbuf + sizeof(struct DNS_HEADER) + domainLen) != '\0') {
       domainLen++;
     }
-    clientHeader->qr = 0;
+    int offset=0;
+    if(domainLen==0){
+      domainLen=1;
+      offset -= 1;
+    }
+    clientHeader->qr = 1;
+    clientHeader->ra = 1;
     clientHeader->ans_count = htons(1);
     clientHeader->add_count = htons(0);
-    int offset =
+    offset +=
         sizeof(struct DNS_HEADER) + domainLen + 1 + sizeof(struct QUESTION);
     uint16_t domain_offset = htons(0xc00c);
     memcpy(recvbuf + offset, &domain_offset, 2);
@@ -75,7 +81,7 @@ int main(int argc, char *argv[]) {
     char dat = domainLen;
     memcpy(resdata + 3, &dat, 1);
     memcpy(recvbuf + offset, resdata, 4);
-    offset += 5;
+    offset += 4;
 
     // 发送DNS响应报文
     int nsent = sendto(sockfd, recvbuf, offset, 0,
