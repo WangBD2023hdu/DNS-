@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
                        (struct sockaddr *)&servaddr, (socklen_t *)&len);
   if (relen < 0) {
     perror("erroe");
-    return -1;
+    return 1;
   }
   printf("recv response!\n");
   struct DNS_HEADER *respondheader;
