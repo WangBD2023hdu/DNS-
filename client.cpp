@@ -37,11 +37,13 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
   char netdomian[256];
   bzero(netdomian, 256);
   int offset = 0;
-  char *hostname_dup = strdup(domain);      // strdup --> malloc
+  char *hostname_dup = strdup(domain);  // strdup --> malloc
+
   char *token = strtok(hostname_dup, ".");  // www.0voice.com ,token的结果是www
-  if (token == NULL) {
+  if (*hostname_dup == '.') {
     offset += 1;
     netdomian[0] = '.';
+    token = NULL;
   }
   while (token != NULL) {
     size_t len = strlen(token);
@@ -138,6 +140,7 @@ int main(int argc, char *argv[]) {
     printf("ttl:%d\n", ntohs(answer[0].resource->ttl));
     memcpy(answer[0].rdata, (revbuf + sendlen + 2 + sizeof(struct R_DATA)),
            ntohs(answer[0].resource->data_len));
+
     answer[0].rdata[ntohs(answer[0].resource->data_len)] = '\0';
     char ip[20];
     inet_ntop(AF_INET, answer[0].rdata, ip, sizeof(struct sockaddr));

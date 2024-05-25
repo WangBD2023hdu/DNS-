@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     uint16_t domain_offset = htons(0xc00c);
     memcpy(recvbuf + offset, &domain_offset, 2);
     offset += 2;
-
+    printf("len %d \n", domainLen);
     struct R_DATA returnData;
     returnData.type = htons(T_A);
     returnData._class = htons(1);
