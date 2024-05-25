@@ -63,7 +63,7 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
              sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
              (sockaddr *)servaddr, sizeof(sockaddr_in)) < 0) {
     perror("send failure!");
-    exit(1);
+    return -1;
   }
 
   return buflen;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   printf("%s\n", server->h_addr);
   int sendlen;
   if ((sendlen = send_query(sockfd, domain, &servaddr)) == -1) {
-    exit(1);
+    return 0;
   }
   printf("send success!\n");
 
