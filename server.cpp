@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     char dat = domainLen;
     memcpy(resdata + 3, &dat, 1);
     memcpy(recvbuf + offset, resdata, 4);
-    offset += 4;
+    offset += 5;
 
     // 发送DNS响应报文
     int nsent = sendto(sockfd, recvbuf, offset, 0,
