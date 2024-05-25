@@ -65,10 +65,10 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
          sizeof(question));
   size_t buflen = sizeof(header) + strlen(netdomian) + 1 + sizeof(question);
   ssize_t sendlen;
-  int ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
-  if (ret < 0) {
-    exit(1);
-  }
+  // int ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+  // if (ret < 0) {
+  //   exit(1);
+  // }
   if ((sendlen =
            sendto(sockfd, buf,
                   sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
@@ -113,7 +113,13 @@ int main(int argc, char *argv[]) {
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(dns_server_port);
-  memcpy(&servaddr.sin_addr, server->h_addr_list[0], server->h_length);
+  servaddr.sin_addr = *((struct in_addr **)server->h_addr_list)[0];
+  printf("ip%s\n", inet_ntoa(servaddr.sin_addr));
+  int ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+  if (ret < 0) {
+    exit(1);
+  }
+  printf("connect return %d\n", ret);
   int sendlen;
   if ((sendlen = send_query(sockfd, domain, &servaddr)) == 1) {
     return 1;
@@ -127,7 +133,7 @@ int main(int argc, char *argv[]) {
                        (struct sockaddr *)&servaddr, (socklen_t *)&len);
   if (relen < 0) {
     perror("erroe");
-    exit(1);
+    return -1;
   }
   printf("recv response!\n");
   struct DNS_HEADER *respondheader;
