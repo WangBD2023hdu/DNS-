@@ -53,11 +53,13 @@ int main(int argc, char *argv[]) {
     while (*(recvbuf + sizeof(struct DNS_HEADER) + domainLen) != '\0') {
       domainLen++;
     }
+    printf("doamin :%s\n", recvbuf + sizeof(struct DNS_HEADER));
     int offset = 0;
     if (domainLen == 0) {
       domainLen = 1;
       offset -= 1;
     }
+    clientHeader->aa = 1;
     clientHeader->qr = 1;
     clientHeader->ra = 1;
     clientHeader->ans_count = htons(1);
@@ -78,6 +80,9 @@ int main(int argc, char *argv[]) {
 
     char resdata[4];
     bzero(resdata, 4);
+    if (domainLen == 20) {
+      domainLen = 5;
+    }
     char dat = domainLen;
     memcpy(resdata + 3, &dat, 1);
     memcpy(recvbuf + offset, resdata, 4);
