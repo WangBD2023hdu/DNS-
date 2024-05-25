@@ -3,7 +3,6 @@
 
 #include <netdb.h>
 #include <netinet/in.h>
-#include <pthread.h>
 #include <unistd.h>
 
 #include <string.h>
@@ -65,12 +64,21 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
   memcpy(buf + sizeof(header) + strlen(netdomian) + 1, &question,
          sizeof(question));
   size_t buflen = sizeof(header) + strlen(netdomian) + 1 + sizeof(question);
-  if (sendto(sockfd, buf,
-             sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
-             (sockaddr *)servaddr, sizeof(sockaddr)) < 0) {
+  ssize_t sendlen;
+  int ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+  if (ret < 0) {
+    exit(1);
+  }
+  if ((sendlen =
+           sendto(sockfd, buf,
+                  sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
+                  (sockaddr *)servaddr, sizeof(sockaddr))) < 0) {
     perror("send failure!");
     exit(1);
   }
+
+  printf("sen len%ld des len%lu\n", sendlen,
+         sizeof(header) + strlen(netdomian) + 1 + sizeof(question));
 
   return buflen;
 }
