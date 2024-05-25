@@ -70,7 +70,7 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) {
+  if (argc <= 2) {
     printf("please input domain!\n");
     return -1;
   }
