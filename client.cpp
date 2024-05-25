@@ -19,7 +19,7 @@ void init_header(struct DNS_HEADER *header) {
   bzero(header, sizeof(struct DNS_HEADER));
   srandom(time(NULL));
   header->id = random();
-  header->rd = 1;
+  header->rd = 0;  // TODO
   header->q_count = htons(1);
 }
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
   if (argc >= 3) {
     server = gethostbyname(argv[2]);  // TODO
   } else {
-    server = gethostbyname("114.114.114.114");
+    server = gethostbyname("localhost");
   }
   if (argc == 4) {
     dns_server_port = atoi(argv[3]);
@@ -111,8 +111,12 @@ int main(int argc, char *argv[]) {
   char revbuf[65535];
   bzero(revbuf, 65535);
   socklen_t len = sizeof(servaddr);
-  recvfrom(sockfd, (char *)revbuf, 65535, 0, (struct sockaddr *)&servaddr,
-           (socklen_t *)&len);
+  int relen = recvfrom(sockfd, (char *)revbuf, 65535, 0,
+                       (struct sockaddr *)&servaddr, (socklen_t *)&len);
+  if (relen < 0) {
+    perror("erroe");
+    exit(1);
+  }
   printf("recv response!\n");
   struct DNS_HEADER *respondheader;
   respondheader = (struct DNS_HEADER *)revbuf;
