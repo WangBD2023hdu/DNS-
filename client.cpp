@@ -63,14 +63,14 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
              sizeof(header) + strlen(netdomian) + 1 + sizeof(question), 0,
              (sockaddr *)servaddr, sizeof(sockaddr_in)) < 0) {
     perror("send failure!");
-    return -1;
+    exit(1);
   }
 
   return buflen;
 }
 
 int main(int argc, char *argv[]) {
-  if (argc <= 2) {
+  if (argc < 2) {
     printf("please input domain!\n");
     return -1;
   }
