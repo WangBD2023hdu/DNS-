@@ -53,9 +53,9 @@ int main(int argc, char *argv[]) {
     while (*(recvbuf + sizeof(struct DNS_HEADER) + domainLen) != '\0') {
       domainLen++;
     }
-    clientHeader->qr = 1;
+    clientHeader->qr = 0;
     clientHeader->ans_count = htons(1);
-
+    clientHeader->add_count = htons(0);
     int offset =
         sizeof(struct DNS_HEADER) + domainLen + 1 + sizeof(struct QUESTION);
     uint16_t domain_offset = htons(0xc00c);

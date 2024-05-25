@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   printf("%s\n", server->h_addr);
   int sendlen;
   if ((sendlen = send_query(sockfd, domain, &servaddr)) == -1) {
-    return 0;
+    return 1;
   }
   printf("send success!\n");
 
