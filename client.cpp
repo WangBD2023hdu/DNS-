@@ -39,7 +39,10 @@ int send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
   int offset = 0;
   char *hostname_dup = strdup(domain);      // strdup --> malloc
   char *token = strtok(hostname_dup, ".");  // www.0voice.com ,token的结果是www
-  if (token == NULL) netdomian[0] = '.';
+  if (token == NULL) {
+    offset += 1;
+    netdomian[0] = '.';
+  }
   while (token != NULL) {
     size_t len = strlen(token);
     *(netdomian + offset) = len;
