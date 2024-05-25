@@ -23,7 +23,7 @@ void init_header(struct DNS_HEADER *header) {
   header->q_count = htons(1);
 }
 
-size_t send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
+uint32_t send_query(int sockfd, const char *domain, sockaddr_in *servaddr) {
   char buf[65535];
   bzero(buf, 65535);
   struct DNS_HEADER header;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
   bcopy(server->h_addr, (char *)&servaddr.sin_addr.s_addr,
         (size_t)server->h_length);
   printf("%s\n", server->h_addr);
-  size_t sendlen;
+  uint32_t sendlen;
   if ((sendlen = send_query(sockfd, domain, &servaddr)) == -1) {
     exit(1);
   }
